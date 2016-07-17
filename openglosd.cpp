@@ -1033,23 +1033,28 @@ bool cOglCmdRenderFbToBufferFb::Execute(void) {
     GLfloat x2 = x + fb->ViewportWidth();  //right
     GLfloat y2 = y + fb->ViewportHeight(); //bottom
 
-    GLfloat texX1 = 0.0f;
-    GLfloat texX2 = 1.0f;
+    GLfloat texX1 = drawPortX / (GLfloat)fb->Width();
+    GLfloat texX2 = texX1 + 1.0f;
 #ifdef USE_GLES2
-    GLfloat texY1 = 0.0f;
-    GLfloat texY2 = 1.0f;
+    GLfloat texY1 = drawPortY / (GLfloat)fb->Height();
+    GLfloat texY2 = texY1 + 1.0f;
 #else
     /* Do the y-axis flip here */
-    GLfloat texY1 = 1.0f;
-    GLfloat texY2 = 0.0f;
+    GLfloat texY2 = drawPortY / (GLfloat)fb->Height();
+    GLfloat texY1 = texY2 + 1.0f;
 #endif
 
     if (fb->Scrollable()) {
         GLfloat pageHeight = (GLfloat)fb->ViewportHeight() / (GLfloat)fb->Height();
         texX1 = abs(drawPortX) / (GLfloat)fb->Width();
-        texY1 = 1.0f - pageHeight - abs(drawPortY) / (GLfloat)fb->Height();
         texX2 = texX1 + (GLfloat)fb->ViewportWidth() / (GLfloat)fb->Width();
+#ifdef USE_GLES2
+        texY1 = 1.0f - pageHeight - abs(drawPortY) / (GLfloat)fb->Height();
         texY2 = texY1 + pageHeight;
+#else
+        texY2 = 1.0f - pageHeight - abs(drawPortY) / (GLfloat)fb->Height();
+        texY1 = texY2 + pageHeight;
+#endif
     }
 
     GLfloat quadVertices[] = {

@@ -259,8 +259,8 @@ typedef struct _video_module_
     void (*const DelHwDecoder) (VideoHwDecoder *);
     unsigned (*const GetSurface) (VideoHwDecoder *, const AVCodecContext *);
     void (*const ReleaseSurface) (VideoHwDecoder *, unsigned);
-    enum PixelFormat (*const get_format) (VideoHwDecoder *, AVCodecContext *,
-	const enum PixelFormat *);
+    enum AVPixelFormat (*const get_format) (VideoHwDecoder *, AVCodecContext *,
+	const enum AVPixelFormat *);
     void (*const RenderFrame) (VideoHwDecoder *, const AVCodecContext *,
 	const AVFrame *);
     void *(*const GetHwAccelContext)(VideoHwDecoder *);
@@ -1554,7 +1554,7 @@ struct _vaapi_decoder_
     /// flags for put surface for different resolutions groups
     unsigned SurfaceFlagsTable[VideoResolutionMax];
 
-    enum PixelFormat PixFmt;		///< ffmpeg frame pixfmt
+    enum AVPixelFormat PixFmt;		///< ffmpeg frame pixfmt
     int WrongInterlacedWarned;		///< warning about interlace flag issued
     int Interlaced;			///< ffmpeg interlaced flag
     int TopFieldFirst;			///< ffmpeg top field displayed first
@@ -2548,7 +2548,7 @@ static void VaapiUpdateOutput(VaapiDecoder * decoder)
 ///	FIXME: must check if put/get with this format is supported (see intel)
 ///
 static int VaapiFindImageFormat(VaapiDecoder * decoder,
-    enum PixelFormat pix_fmt, VAImageFormat * format)
+    enum AVPixelFormat pix_fmt, VAImageFormat * format)
 {
     VAImageFormat *imgfrmts;
     int imgfrmt_n;
@@ -2911,10 +2911,10 @@ static VAEntrypoint VaapiFindEntrypoint(const VAEntrypoint * entrypoints,
 ///
 ///	@note + 2 surface for software deinterlace
 ///
-static enum PixelFormat Vaapi_get_format(VaapiDecoder * decoder,
-    AVCodecContext * video_ctx, const enum PixelFormat *fmt)
+static enum AVPixelFormat Vaapi_get_format(VaapiDecoder * decoder,
+    AVCodecContext * video_ctx, const enum AVPixelFormat *fmt)
 {
-    const enum PixelFormat *fmt_idx;
+    const enum AVPixelFormat *fmt_idx;
     VAProfile profiles[vaMaxNumProfiles(VaDisplay)];
     int profile_n;
     VAEntrypoint entrypoints[vaMaxNumEntrypoints(VaDisplay)];
@@ -5708,8 +5708,8 @@ static const VideoModule VaapiModule = {
 	    const AVCodecContext *))VaapiGetSurface,
     .ReleaseSurface =
 	(void (*const) (VideoHwDecoder *, unsigned))VaapiReleaseSurface,
-    .get_format = (enum PixelFormat(*const) (VideoHwDecoder *,
-	    AVCodecContext *, const enum PixelFormat *))Vaapi_get_format,
+    .get_format = (enum AVPixelFormat(*const) (VideoHwDecoder *,
+	    AVCodecContext *, const enum AVPixelFormat *))Vaapi_get_format,
     .RenderFrame = (void (*const) (VideoHwDecoder *,
 	    const AVCodecContext *, const AVFrame *))VaapiSyncRenderFrame,
     .GetHwAccelContext = (void *(*const)(VideoHwDecoder *))
@@ -5750,8 +5750,8 @@ static const VideoModule VaapiGlxModule = {
 	    const AVCodecContext *))VaapiGetSurface,
     .ReleaseSurface =
 	(void (*const) (VideoHwDecoder *, unsigned))VaapiReleaseSurface,
-    .get_format = (enum PixelFormat(*const) (VideoHwDecoder *,
-	    AVCodecContext *, const enum PixelFormat *))Vaapi_get_format,
+    .get_format = (enum AVPixelFormat(*const) (VideoHwDecoder *,
+	    AVCodecContext *, const enum AVPixelFormat *))Vaapi_get_format,
     .RenderFrame = (void (*const) (VideoHwDecoder *,
 	    const AVCodecContext *, const AVFrame *))VaapiSyncRenderFrame,
     .GetHwAccelContext = (void *(*const)(VideoHwDecoder *))
@@ -5806,7 +5806,7 @@ typedef struct _vdpau_decoder_
     int OutputWidth;			///< real video output width
     int OutputHeight;			///< real video output height
 
-    enum PixelFormat PixFmt;		///< ffmpeg frame pixfmt
+    enum AVPixelFormat PixFmt;		///< ffmpeg frame pixfmt
     int WrongInterlacedWarned;		///< warning about interlace flag issued
     int Interlaced;			///< ffmpeg interlaced flag
     int TopFieldFirst;			///< ffmpeg top field displayed first
@@ -7397,10 +7397,10 @@ static VdpDecoderProfile VdpauCheckProfile(VdpauDecoder * decoder,
 ///			it is terminated by -1 as 0 is a valid format, the
 ///			formats are ordered by quality.
 ///
-static enum PixelFormat Vdpau_get_format(VdpauDecoder * decoder,
-    AVCodecContext * video_ctx, const enum PixelFormat *fmt)
+static enum AVPixelFormat Vdpau_get_format(VdpauDecoder * decoder,
+    AVCodecContext * video_ctx, const enum AVPixelFormat *fmt)
 {
-    const enum PixelFormat *fmt_idx;
+    const enum AVPixelFormat *fmt_idx;
     VdpDecoderProfile profile;
     int max_refs;
 
@@ -9566,8 +9566,8 @@ static const VideoModule VdpauModule = {
 	    const AVCodecContext *))VdpauGetSurface,
     .ReleaseSurface =
 	(void (*const) (VideoHwDecoder *, unsigned))VdpauReleaseSurface,
-    .get_format = (enum PixelFormat(*const) (VideoHwDecoder *,
-	    AVCodecContext *, const enum PixelFormat *))Vdpau_get_format,
+    .get_format = (enum AVPixelFormat(*const) (VideoHwDecoder *,
+	    AVCodecContext *, const enum AVPixelFormat *))Vdpau_get_format,
     .RenderFrame = (void (*const) (VideoHwDecoder *,
 	    const AVCodecContext *, const AVFrame *))VdpauSyncRenderFrame,
     .GetHwAccelContext = (void *(*const)(VideoHwDecoder *))
@@ -9733,8 +9733,8 @@ static const VideoModule NoopModule = {
 #endif
     .ReleaseSurface = NoopReleaseSurface,
 #if 0
-    .get_format = (enum PixelFormat(*const) (VideoHwDecoder *,
-	    AVCodecContext *, const enum PixelFormat *))Noop_get_format,
+    .get_format = (enum AVPixelFormat(*const) (VideoHwDecoder *,
+	    AVCodecContext *, const enum AVPixelFormat *))Noop_get_format,
     .RenderFrame = (void (*const) (VideoHwDecoder *,
 	    const AVCodecContext *, const AVFrame *))NoopSyncRenderFrame,
     .GetHwAccelContext = (void *(*const)(VideoHwDecoder *))
@@ -10335,8 +10335,8 @@ void VideoReleaseSurface(VideoHwDecoder * hw_decoder, unsigned surface)
 ///				valid format, the formats are ordered by
 ///				quality.
 ///
-enum PixelFormat Video_get_format(VideoHwDecoder * hw_decoder,
-    AVCodecContext * video_ctx, const enum PixelFormat *fmt)
+enum AVPixelFormat Video_get_format(VideoHwDecoder * hw_decoder,
+    AVCodecContext * video_ctx, const enum AVPixelFormat *fmt)
 {
 #ifdef DEBUG
     int ms_delay;

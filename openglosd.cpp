@@ -1634,7 +1634,9 @@ cOglCmdDrawTexture::cOglCmdDrawTexture(cOglFb *fb, sOglImage *imageRef, GLint x,
     this->imageRef = imageRef;
     this->x = x;
     this->y = y;
+#ifdef USE_GLES2
     this->bcolor = BORDERCOLOR;
+#endif
 }
 
 bool cOglCmdDrawTexture::Execute(void) {
